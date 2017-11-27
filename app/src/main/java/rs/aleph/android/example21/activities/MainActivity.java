@@ -1,31 +1,32 @@
 package rs.aleph.android.example21.activities;
 
 import android.app.Dialog;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import rs.aleph.android.example21.R;
 import rs.aleph.android.example21.db.DatabaseHelper;
-import rs.aleph.android.example21.dialogs.AboutDialog;
+import rs.aleph.android.example21.db.model.Notes;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity{
     private AlertDialog dialog;
     //za rad sa bazom
     private DatabaseHelper databaseHelper;
+
+    public static String NOTES = "selectedItemId";
 
 
 
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.main);
 
         //showing notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+      /*  NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_stat_buy);
         builder.setSmallIcon(R.drawable.ic_stat_buy);
         builder.setContentTitle("Title");
@@ -59,12 +62,12 @@ public class MainActivity extends AppCompatActivity{
         // Shows notification with the notification manager (notification ID is used to update the notification later on)
         //umesto this aktivnost
         NotificationManager manager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(NOTIFICATION_ID, builder.build());
+        manager.notify(NOTIFICATION_ID, builder.build());*/
 
 
 
         //showing AboutDialog
-        if (dialog == null){
+        /*if (dialog == null){
             dialog = new AboutDialog(MainActivity.this).prepareDialog();
         } else {
             if (dialog.isShowing()) {
@@ -72,13 +75,13 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        dialog.show();
+        dialog.show();*/
 
-        //Pristupanje deljenim podesavanjima,primaju samo primitivne tipove
+       /* //Pristupanje deljenim podesavanjima,primaju samo primitivne tipove
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //default vrednost iz liste "1"
         String s = sharedPreferences.getString("@string/pref_sync","1");
-        boolean b = sharedPreferences.getBoolean("@string/pref_sync",false);
+        boolean b = sharedPreferences.getBoolean("@string/pref_sync",false);*/
 
 
 
@@ -178,67 +181,43 @@ public class MainActivity extends AppCompatActivity{
         }
 
 
-
-        if (savedInstanceState == null) {
-
-        }
+        final ListView listView = (ListView)findViewById(R.id.notes);
 
 
-
-
-    }
-
-
-   /* private void addItem(String name, String description, float rating, Category category, String image){
-
-        Product product = new Product();
-        product.setmName(name);
-        product.setDescription(description);
-        product.setRating(rating);
-        product.setImage(image);
-        product.setCategory(category);
-
-        //pozovemo metodu create da bi upisali u bazu
+        List<Notes> listRs = null;
         try {
-            getDatabaseHelper().getProductDao().create(product);
-            getDatabaseHelper().getProductDao().update(product);
-            if (product != null) {
-                getDatabaseHelper().getProductDao().delete(product);
-            }
-            getDatabaseHelper().getProductDao().queryBuilder().
-                    where().
-                    eq(Product.FIELD_NAME_NAME,"nesto").
-                    query();
+            listRs = getDatabaseHelper().getNotesDao().queryForAll();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy.");
-            try {
-                Date date = sdf.parse("12.02.2014.");
-                String dateString = sdf.format(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            ListAdapter adapter1 = new ArrayAdapter<Notes>(MainActivity.this,R.layout.list_item,listRs);
+            listView.setAdapter(adapter1);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+                    Notes n = (Notes) listView.getItemAtPosition(position);
+                    int selectedItemId = n.getmId();
+                    intent.putExtra(NOTES,selectedItemId);
+                    startActivity(intent);
+                }
+            });
 
 
-
-            refresh();
-
-            Toast.makeText(this, "Product inserted", Toast.LENGTH_SHORT).show();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     private void refresh() {
-        ListView listview = (ListView) findViewById(R.id.products);
+        ListView listview = (ListView) findViewById(R.id.notes);
 
-        if (listview != null){
-            ArrayAdapter<Product> adapter = (ArrayAdapter<Product>) listview.getAdapter();
+        if (listview != null) {
+            ArrayAdapter<Notes> adapter = (ArrayAdapter<Notes>) listview.getAdapter();
 
-            if(adapter!= null)
-            {
+            if (adapter != null) {
                 try {
                     adapter.clear();
-                    List<Product> list = getDatabaseHelper().getProductDao().queryForAll();
+                    List<Notes> list = getDatabaseHelper().getNotesDao().queryForAll();
 
                     adapter.addAll(list);
 
@@ -248,7 +227,14 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         }
-    }*/
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refresh();
+    }
 
     public DatabaseHelper getDatabaseHelper() {
         if (databaseHelper == null) {

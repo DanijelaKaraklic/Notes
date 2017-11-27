@@ -3,6 +3,8 @@ package rs.aleph.android.example21.db.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Date;
+
 /**
  * Created by KaraklicDM on 27.11.2017.
  */
@@ -20,6 +22,17 @@ public class Notes {
 
     @DatabaseField(columnName = FIELD_NAME_ID,generatedId = true)
     private int mId;
+
+    @DatabaseField(columnName = FIELD_NAME_TITLE)
+    private String mTitle;
+
+    @DatabaseField(columnName = FIELD_NAME_DESCRIPTION)
+    private String mDescription;
+
+
+    @DatabaseField(columnName = FIELD_NAME_DATE)
+    private Date mDate;
+
 
     public Notes() {
     }
@@ -48,24 +61,16 @@ public class Notes {
         this.mDescription = mDescription;
     }
 
-    public String getmDate() {
+
+
+
+    public Date getmDate() {
         return mDate;
     }
 
-    public void setmDate(String mDate) {
+    public void setmDate(Date mDate) {
         this.mDate = mDate;
     }
-
-    @DatabaseField(columnName = FIELD_NAME_TITLE)
-    private String mTitle;
-
-    @DatabaseField(columnName = FIELD_NAME_DESCRIPTION)
-    private String mDescription;
-
-    @DatabaseField(columnName = FIELD_NAME_DATE)
-    private String mDate;
-
-
 
 
 

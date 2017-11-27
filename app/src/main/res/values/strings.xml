@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Views</string>
+    <string name="app_name">Notes</string>
 
     <string name="activity_main_name">Main Activity</string>
     <string name="activity_main_toolbar_title">Toolbar Title</string>

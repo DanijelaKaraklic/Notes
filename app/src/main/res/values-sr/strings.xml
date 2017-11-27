@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Погледи</string>
+    <string name="app_name">Белешке</string>
 
     <string name="activity_main_name">Главна активност</string>
     <string name="activity_main_toolbar_title">Главна активност</string>
